@@ -1,22 +1,35 @@
-import requests
+import instaloader
 
-def fetch_html(url):
+
+def scrape_instagram_profile(username):
+    loader = instaloader.Instaloader()
+
     try:
-        response = requests.get(url)
-        if response.status_code == 200:
-            return response.text
-        else:
-            print(f"Failed to fetch page. Status code: {response.status_code}")
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching page: {e}")
-    return None
+        profile = instaloader.Profile.from_username(loader.context, username)
+        print(f"Profile Username: {profile.username}")
+        print(f"Profile Full Name: {profile.full_name}")
+        print(f"Profile Bio: {profile.biography}")
+        print(f"Profile Followers: {profile.followers}")
+        print(f"Profile Following: {profile.followees}")
+        print(f"Profile Posts: {profile.mediacount}")
+
+        for post in profile.get_posts():
+            print(f"Post: {post.url}")
+            print(f"Caption: {post.caption}")
+            print(f"Likes: {post.likes}")
+            print(f"Comments: {post.comments}")
+            print("-" * 40)
+
+    except instaloader.exceptions.ProfileNotExistsException:
+        print(f"The profile {username} does not exist.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
 
 def main():
-    url = input("Enter the URL of the social media page: ")
-    html_content = fetch_html(url)
-    if html_content:
-        print("Page fetched successfully.")
-        print(html_content[:500])
+    username = input("Enter the Instagram username: ")
+    scrape_instagram_profile(username)
+
 
 if __name__ == "__main__":
     main()
