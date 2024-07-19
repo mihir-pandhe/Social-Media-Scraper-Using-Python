@@ -1,4 +1,6 @@
 import instaloader
+import pandas as pd
+from datetime import datetime
 
 
 def func(username):
@@ -6,19 +8,35 @@ def func(username):
 
     try:
         profile = instaloader.Profile.from_username(loader.context, username)
-        print(f"Profile Username: {profile.username}")
-        print(f"Profile Full Name: {profile.full_name}")
-        print(f"Profile Bio: {profile.biography}")
-        print(f"Profile Followers: {profile.followers}")
-        print(f"Profile Following: {profile.followees}")
-        print(f"Profile Posts: {profile.mediacount}")
 
+        profile_data = {
+            "Username": profile.username,
+            "Full Name": profile.full_name,
+            "Bio": profile.biography,
+            "Followers": profile.followers,
+            "Following": profile.followees,
+            "Posts": profile.mediacount,
+        }
+
+        for key, value in profile_data.items():
+            print(f"{key}: {value}")
+
+        posts_data = []
         for post in profile.get_posts():
-            print(f"Post: {post.url}")
-            print(f"Caption: {post.caption}")
-            print(f"Likes: {post.likes}")
-            print(f"Comments: {post.comments}")
-            print("-" * 40)
+            post_info = {
+                "URL": post.url,
+                "Caption": post.caption,
+                "Likes": post.likes,
+                "Comments": post.comments,
+                "Hashtags": post.caption_hashtags,
+                "Date": post.date_utc.strftime("%Y-%m-%d %H:%M:%S"),
+            }
+            posts_data.append(post_info)
+            loader.download_post(post, target=profile.username)
+
+        df = pd.DataFrame(posts_data)
+        df.to_csv(f"{username}_posts.csv", index=False)
+        print(f"Saved posts data to {username}_posts.csv")
 
     except instaloader.exceptions.ProfileNotExistsException:
         print(f"The profile {username} does not exist.")
