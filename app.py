@@ -1,7 +1,7 @@
 import instaloader
 
 
-def scrape_instagram_profile(username):
+def func(username):
     loader = instaloader.Instaloader()
 
     try:
@@ -28,7 +28,7 @@ def scrape_instagram_profile(username):
 
 def main():
     username = input("Enter the Instagram username: ")
-    scrape_instagram_profile(username)
+    func(username)
 
 
 if __name__ == "__main__":
